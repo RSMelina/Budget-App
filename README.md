@@ -1,7 +1,9 @@
 
 # Budget-App
-#From my Free Code Camp Scientific Computing with Python Projects
+This is the boilerplate for the Budget App project. Instructions for building your project can be found at https://www.freecodecamp.org/learn/scientific-computing-with-python/scientific-computing-with-python-projects/budget-app
+
 It is a really basis form of a debit card balance 
+
 Complete the Category class. It should be able to instantiate objects based on different budget categories like food, clothing, and entertainment. When objects are created, they are passed in the name of the category. The class should have an instance variable called ledger that is a list. The class should also contain the following methods:
 
 A deposit method that accepts an amount and description. If no description is given, it should default to an empty string. The method should append an object to the ledger list in the form of {"amount": amount, "description": description}.
