@@ -1,0 +1,112 @@
+class Category:
+  def __init__(self, category):
+    self.category = category
+    self.ledger = list()
+  def deposit (self,amount,description=''):
+    self.ledger.append({'amount':amount,'description':description})
+  def get_balance (self):
+    return sum(item["amount"] for item in self.ledger)
+  def check_funds (self,amount):
+    if amount<= sum(item["amount"] for item in self.ledger):
+      return True
+    else: return False
+  def withdraw (self,amount,description=''):
+    withdraws=0
+    if self.check_funds(amount):
+      self.ledger.append({'amount':-amount,'description':description})
+      withdraws=withdraws+amount
+      return True
+    else: return False
+  def transfer(self, amount,other_category):
+    if self.check_funds(amount):
+      self.withdraw(amount,f'Transfer to {other_category.category}')
+      other_category.deposit(amount, f'Transfer from {self.category}')
+      return True
+    else: return False
+    #title
+  def __str__(self):
+    final_item_line=""
+    title = self.category.center(30, "*")+  '\n'
+    #lines
+    for item in self.ledger:
+      item_desc=item['description']
+      if len(item_desc)>23:
+        item_desc=item_desc[:23]
+      item_amount=str(f"{item['amount']:>7.2f}")
+      litem_amount=len(item_amount)
+      spaces=30-len(item_desc)-litem_amount
+      final_item_line=final_item_line+item_desc+(' '*spaces)+item_amount+'\n'
+    total='Total: '+str(f"{(self.get_balance()):.2f}")
+    return title+final_item_line+total
+
+def create_spend_chart(categories):
+  spendings = []
+  for category in categories:
+    spent = 0
+    for item in category.ledger:
+      if item['amount'] < 0:
+        spent += item['amount']
+        #print('spent: ',spent)
+    spendings.append(spent)
+  #print('total1: ',spendings)
+  total_spending=sum(spendings)
+  #print('total2: ',total_spending)
+  #Calculate %
+  percentages=[]
+  for val in spendings:
+    percentage= abs(int((val/total_spending)*100))
+    percentage=str(percentage)
+    percentages.append(percentage)
+    #print('percentage: ',percentage)
+    #print('percentages: ',percentages)
+  #Round down the %
+  round_percs=[]
+  for val in percentages:
+    if len(val)>1 and len(val)<3:
+      num=int(val)
+      s_num=int(val[1])
+      perc_rd=num-s_num
+      round_percs.append(perc_rd)
+    elif len(val)==1:
+      num=int(val)
+      perc_rd=num-num
+      round_percs.append(perc_rd)
+    else:
+      perc_rd=val
+      round_percs.append(perc_rd)
+  #print('round percetages: ',round_percs)
+  #chart
+  title= "Percentage spent by category"+'\n'
+  #Y
+  y_val=''
+  for y in range(100,-1,-10):
+    y_val=y_val+str(y).rjust(3) + "| "
+    for percent in round_percs:
+      percent=int(percent)
+      if percent >= y:
+        y_val=y_val+ 'o'+'  '
+      else:
+        y_val=y_val+'   '
+    y_val=y_val+ '\n'
+  #dashline
+  dash_line='    -'
+  for category in categories:
+    dash_line=dash_line+'---'
+  dash_line=dash_line+'\n'
+  #chart labels name
+  max_len_catname=0
+  for category in categories:
+    current_len=len(category.category)
+    if current_len>max_len_catname:
+      max_len_catname=current_len
+  #chart names
+  chart_labels=''
+  for letter in range(max_len_catname):
+    chart_labels=chart_labels+'     '
+    for category in categories:
+      if letter <len(category.category):
+        chart_labels=chart_labels+category.category[letter]+'  '
+      else:
+        chart_labels=chart_labels+'   '
+    chart_labels=chart_labels+'\n'
+  return (title+y_val+dash_line+chart_labels).rstrip('\n')
